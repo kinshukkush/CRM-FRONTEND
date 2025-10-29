@@ -7,12 +7,13 @@ const Home = () => {
   const [checking, setChecking] = useState(true);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
   useEffect(() => {
     (async () => {
       const userInfo = await checkAuth();
       if (!userInfo) {
-        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+        window.location.href = `${backendUrl}/oauth2/authorization/google`;
       } else {
         setUser(userInfo);
         setChecking(false);
@@ -21,7 +22,7 @@ const Home = () => {
   }, []);
 
   const logout = () => {
-    window.location.href = 'http://localhost:8080/logout';
+    window.location.href = `${backendUrl}/logout`;
   };
 
   if (checking) {

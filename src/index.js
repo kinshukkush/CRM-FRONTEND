@@ -6,7 +6,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:8080';
+// Use environment variable for backend URL
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 

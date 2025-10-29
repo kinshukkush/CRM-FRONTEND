@@ -2,7 +2,9 @@ import { useEffect } from 'react';
 
 const LoginPage = () => {
   useEffect(() => {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    // Use environment variable for backend URL, fallback to localhost for development
+    const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+    window.location.href = `${backendUrl}/oauth2/authorization/google`;
   }, []);
 
   return (
