@@ -6,26 +6,42 @@ import { checkAuth } from '../utils/auth';
 const Home = () => {
   const [checking, setChecking] = useState(true);
   const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
   useEffect(() => {
-    (async () => {
-      const userInfo = await checkAuth();
-      if (!userInfo) {
-        window.location.href = `${backendUrl}/oauth2/authorization/google`;
-      } else {
-        setUser(userInfo);
+    const authenticate = async () => {
+      try {
+        console.log('Attempting to check authentication...');
+        const userInfo = await checkAuth();
+        
+        if (!userInfo) {
+          console.log('No user info, redirecting to login');
+          setError('Authentication failed. Redirecting to login...');
+          setTimeout(() => {
+            window.location.href = `${backendUrl}/oauth2/authorization/google`;
+          }, 2000);
+        } else {
+          console.log('User authenticated successfully:', userInfo);
+          setUser(userInfo);
+          setChecking(false);
+        }
+      } catch (err) {
+        console.error('Error during authentication check:', err);
+        setError('Failed to verify authentication. Please try again.');
         setChecking(false);
       }
-    })();
-  }, []);
+    };
+    
+    authenticate();
+  }, [backendUrl]);
 
   const logout = () => {
     window.location.href = `${backendUrl}/logout`;
   };
 
-  if (checking) {
+  if (checking || error) {
     return (
       <div
         style={{
@@ -42,6 +58,11 @@ const Home = () => {
             flexDirection: 'column',
             alignItems: 'center',
             gap: '20px',
+            padding: '40px',
+            background: 'rgba(26, 32, 50, 0.95)',
+            borderRadius: '16px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            border: '1px solid rgba(96, 165, 250, 0.2)',
           }}
         >
           <div
@@ -56,14 +77,49 @@ const Home = () => {
           ></div>
           <p
             style={{
-              color: '#e0e0e0',
+              color: error ? '#f87171' : '#e0e0e0',
               fontSize: '1.2rem',
               fontWeight: '500',
+              textAlign: 'center',
             }}
           >
-            Checking authentication...
+            {error || 'Checking authentication...'}
           </p>
+          {error && (
+            <button
+              onClick={() => window.location.href = `${backendUrl}/oauth2/authorization/google`}
+              style={{
+                padding: '12px 24px',
+                background: '#60A5FA',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                marginTop: '10px',
+              }}
+            >
+              Try Login Again
+            </button>
+          )}
         </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          background: 'linear-gradient(135deg, #0f0f15 0%, #1a1a2e 100%)',
+        }}
+      >
+        <p style={{ color: '#e0e0e0', fontSize: '1.2rem' }}>No user data available</p>
       </div>
     );
   }
