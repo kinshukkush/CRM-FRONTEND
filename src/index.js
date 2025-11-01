@@ -17,10 +17,16 @@ axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.interceptors.request.use(
   (config) => {
     console.log('Making request:', config.method?.toUpperCase(), config.url);
+    
+    // Add JWT token to all requests
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     return config;
   },
   (error) => {
-    console.error('Request error:', error);
     return Promise.reject(error);
   }
 );

@@ -20,13 +20,35 @@ const Home = () => {
   useEffect(() => {
     const authenticate = async () => {
       try {
+        // Check if token is in URL (from OAuth redirect)
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenFromUrl = urlParams.get('token');
+        
+        if (tokenFromUrl) {
+          addDebug('Token found in URL, storing it');
+          localStorage.setItem('authToken', tokenFromUrl);
+          // Remove token from URL
+          window.history.replaceState({}, document.title, '/home');
+        }
+        
+        const token = localStorage.getItem('authToken');
+        
+        if (!token) {
+          addDebug('No token found in localStorage');
+          setError('Please login to continue.');
+          setChecking(false);
+          return;
+        }
+        
         addDebug('Starting authentication check...');
         addDebug(`Backend URL: ${backendUrl}`);
+        addDebug('Token found, verifying...');
         
         const userInfo = await checkAuth();
         
         if (!userInfo) {
           addDebug('No user info returned from checkAuth');
+          localStorage.removeItem('authToken'); // Clear invalid token
           setError('Authentication failed. Please login.');
           setChecking(false);
         } else {
@@ -38,6 +60,7 @@ const Home = () => {
       } catch (err) {
         addDebug(`Error during authentication: ${err.message}`);
         console.error('Error during authentication check:', err);
+        localStorage.removeItem('authToken'); // Clear token on error
         setError('Failed to verify authentication. Please try again.');
         setChecking(false);
       }

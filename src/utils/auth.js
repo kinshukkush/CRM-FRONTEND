@@ -22,13 +22,28 @@ api.interceptors.response.use(
 export const checkAuth = async () => {
   try {
     console.log('Checking authentication...');
-    const res = await api.get('/api/user');
+    const token = localStorage.getItem('authToken');
+    
+    if (!token) {
+      console.log('No auth token found');
+      return null;
+    }
+    
+    const res = await api.get('/api/user', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     console.log('Auth check successful:', res.data);
     return res.data;
   } catch (err) {
     console.error('Auth check failed:', err.response?.status, err.response?.data);
     if (err.code === 'ECONNABORTED') {
       console.error('Request timed out');
+    }
+    // Clear token if unauthorized
+    if (err.response?.status === 401) {
+      localStorage.removeItem('authToken');
     }
     return null;
   }
