@@ -25,9 +25,13 @@ export const checkAuth = async () => {
     const token = localStorage.getItem('authToken');
     
     if (!token) {
-      console.log('No auth token found');
+      console.log('No auth token found in localStorage');
       return null;
     }
+    
+    console.log('Token found, length:', token.length);
+    console.log('Token preview:', token.substring(0, 50) + '...');
+    console.log('Sending request to /api/user with Authorization header');
     
     const res = await api.get('/api/user', {
       headers: {
@@ -38,11 +42,13 @@ export const checkAuth = async () => {
     return res.data;
   } catch (err) {
     console.error('Auth check failed:', err.response?.status, err.response?.data);
+    console.error('Full error:', err);
     if (err.code === 'ECONNABORTED') {
       console.error('Request timed out');
     }
     // Clear token if unauthorized
     if (err.response?.status === 401) {
+      console.log('401 error, removing token from localStorage');
       localStorage.removeItem('authToken');
     }
     return null;
