@@ -70,7 +70,10 @@ const Home = () => {
   }, [backendUrl]);
 
   const logout = () => {
-    window.location.href = `${backendUrl}/logout`;
+    // Clear local storage
+    localStorage.removeItem('authToken');
+    // Redirect to login page
+    navigate('/');
   };
 
   if (checking || error) {
