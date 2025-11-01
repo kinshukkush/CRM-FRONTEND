@@ -6,8 +6,11 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import axios from 'axios';
 
-// Use environment variable for backend URL
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+// Use environment variable for backend URL - TEMPORARY HARDCODE FOR PRODUCTION
+const backendUrl = process.env.REACT_APP_API_URL || 'https://crm-backend-vd9y.onrender.com';
+console.log('Using backend URL:', backendUrl);
+
+axios.defaults.baseURL = backendUrl;
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 

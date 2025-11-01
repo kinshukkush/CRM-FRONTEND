@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+// TEMPORARY HARDCODE FOR PRODUCTION - Change back after setting env vars
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8080',
+  baseURL: process.env.REACT_APP_API_URL || 'https://crm-backend-vd9y.onrender.com',
   withCredentials: true, 
   headers: {
     'Content-Type': 'application/json',

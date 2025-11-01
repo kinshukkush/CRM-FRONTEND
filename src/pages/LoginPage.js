@@ -2,8 +2,9 @@ import { useEffect } from 'react';
 
 const LoginPage = () => {
   useEffect(() => {
-    // Use environment variable for backend URL, fallback to localhost for development
-    const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+    // TEMPORARY HARDCODE FOR PRODUCTION - Use environment variable for backend URL, fallback to production
+    const backendUrl = process.env.REACT_APP_API_URL || 'https://crm-backend-vd9y.onrender.com';
+    console.log('Redirecting to OAuth with backend:', backendUrl);
     window.location.href = `${backendUrl}/oauth2/authorization/google`;
   }, []);
 

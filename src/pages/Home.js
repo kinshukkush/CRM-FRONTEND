@@ -9,7 +9,8 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [debugInfo, setDebugInfo] = useState([]);
   const navigate = useNavigate();
-  const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+  // TEMPORARY HARDCODE FOR PRODUCTION
+  const backendUrl = process.env.REACT_APP_API_URL || 'https://crm-backend-vd9y.onrender.com';
 
   const addDebug = (message) => {
     console.log(message);
