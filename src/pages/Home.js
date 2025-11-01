@@ -7,27 +7,35 @@ const Home = () => {
   const [checking, setChecking] = useState(true);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const [debugInfo, setDebugInfo] = useState([]);
   const navigate = useNavigate();
   const backendUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+
+  const addDebug = (message) => {
+    console.log(message);
+    setDebugInfo(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
 
   useEffect(() => {
     const authenticate = async () => {
       try {
-        console.log('Attempting to check authentication...');
+        addDebug('Starting authentication check...');
+        addDebug(`Backend URL: ${backendUrl}`);
+        
         const userInfo = await checkAuth();
         
         if (!userInfo) {
-          console.log('No user info, redirecting to login');
-          setError('Authentication failed. Redirecting to login...');
-          setTimeout(() => {
-            window.location.href = `${backendUrl}/oauth2/authorization/google`;
-          }, 2000);
+          addDebug('No user info returned from checkAuth');
+          setError('Authentication failed. Please login.');
+          setChecking(false);
         } else {
-          console.log('User authenticated successfully:', userInfo);
+          addDebug('User authenticated successfully!');
+          addDebug(`User: ${JSON.stringify(userInfo)}`);
           setUser(userInfo);
           setChecking(false);
         }
       } catch (err) {
+        addDebug(`Error during authentication: ${err.message}`);
         console.error('Error during authentication check:', err);
         setError('Failed to verify authentication. Please try again.');
         setChecking(false);
@@ -50,6 +58,7 @@ const Home = () => {
           alignItems: 'center',
           height: '100vh',
           background: 'linear-gradient(135deg, #0f0f15 0%, #1a1a2e 100%)',
+          padding: '20px',
         }}
       >
         <div
@@ -63,6 +72,8 @@ const Home = () => {
             borderRadius: '16px',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
             border: '1px solid rgba(96, 165, 250, 0.2)',
+            maxWidth: '600px',
+            width: '100%',
           }}
         >
           <div
@@ -85,6 +96,26 @@ const Home = () => {
           >
             {error || 'Checking authentication...'}
           </p>
+          
+          {/* Debug Info */}
+          {debugInfo.length > 0 && (
+            <div style={{
+              width: '100%',
+              maxHeight: '200px',
+              overflowY: 'auto',
+              background: 'rgba(0,0,0,0.3)',
+              padding: '15px',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+              color: '#a0a0a0',
+              fontFamily: 'monospace',
+            }}>
+              {debugInfo.map((info, index) => (
+                <div key={index} style={{ marginBottom: '5px' }}>{info}</div>
+              ))}
+            </div>
+          )}
+          
           {error && (
             <button
               onClick={() => window.location.href = `${backendUrl}/oauth2/authorization/google`}
@@ -100,7 +131,7 @@ const Home = () => {
                 marginTop: '10px',
               }}
             >
-              Try Login Again
+              Login with Google
             </button>
           )}
         </div>
