@@ -46,9 +46,12 @@ const CampaignBuilder = () => {
         processedRules
       );
 
-      setAudienceSize(response.data);
+      // Handle both old format (number) and new format ({count: number})
+      const count = typeof response.data === 'number' ? response.data : response.data.count;
+      setAudienceSize(count);
     } catch (error) {
       console.error('Error fetching audience size:', error);
+      setAudienceSize(0); // Set to 0 on error
     } finally {
       setIsLoading(false);
     }
